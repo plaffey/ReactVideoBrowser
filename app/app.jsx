@@ -1,14 +1,48 @@
-var React = require("react");
-var ReactDOM = require("react-dom");
-var {Route, Router, IndexRoute, hashHistory} = require("react-router");
+import _ from 'lodash';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import YTSearch from 'youtube-api-search';
+import SearchBar from './components/search_bar';
+import VideoList from './components/video_list.js';
+import VideoDetail from './components/video_detail';
+const API_KEY = 'AIzaSyBvgvMCVg9DW1g5Uf0fq7XXfVK7k7VxzeA';
 
-// Load foundation
-$(document).foundation();
 
-// App css
-require("style!css!sass!applicationStyles");
+class App extends Component {
 
-ReactDOM.render(
-  <p>Boilerplate 3 Project</p>,
-  document.getElementById("app")
-);
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      videos: [],
+      selectedVideo: null
+    };
+
+    this.videoSearch('surfboards');
+  }
+
+  videoSearch(term) {
+    YTSearch({key: API_KEY, term: term}, (videos) => {
+      this.setState({
+        videos: videos,
+        selectedVideo: videos[0]
+      });
+    });
+  }
+
+  render() {
+    const videoSearch = _.debounce((term) => { this.videoSearch(term) }, 300);
+
+    return (
+      <div>
+        <SearchBar onSearchTermChange={videoSearch} />
+        <VideoDetail video={this.state.selectedVideo} />
+        <VideoList
+          onVideoSelect={selectedVideo => this.setState({selectedVideo})}
+          videos={this.state.videos} />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<App/>, document.querySelector('.container'));
