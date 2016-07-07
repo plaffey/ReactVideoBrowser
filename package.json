@@ -1,7 +1,7 @@
 {
   "name": "react-video-browser",
   "version": "1.0.0",
-  "description": "Simple React app",
+  "description": "React Video Browser",
   "main": "index.js",
   "scripts": {
     "test": "karma start",
